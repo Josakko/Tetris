@@ -22,12 +22,15 @@ FIGURES_POS = [
 
 
 class Game:
-    def __init__(self, game):
+    def __init__(self, game=pygame):
         game.init()
 
         screen = game.display.set_mode(RESOLUTION)
         game.display.set_caption("Tetris")
         game.display.set_icon(game.image.load("assets\JK.ico"))
+
+        overlay = pygame.Surface((RESOLUTION), pygame.SRCALPHA)
+        overlay.fill((0, 0, 0, 128))
 
         game_screen = game.Surface(GAME_RESOLUTION)
         grid = [game.Rect(x * TILE, y * TILE, TILE, TILE) for x in range(W) for y in range(H)]
@@ -44,6 +47,7 @@ class Game:
         title_font = game.font.Font("assets/font.ttf", 63)
         font = game.font.Font("assets/font.ttf", 45)
 
+        paused_lbl = title_font.render("Paused", True, game.Color("darkorange"))
         title = title_font.render("TETRIS", True, game.Color("darkorange"))
         score_lbl = font.render("Score:", True, game.Color("green"))
         record_lbl = font.render("Record:", True, game.Color("purple"))
@@ -84,11 +88,17 @@ class Game:
                     elif event.key == game.K_ESCAPE:
                         if self.paused: 
                             self.paused = not self.paused 
-                            game.display.set_caption("Tetris"); title = title_font.render("TETRIS", True, game.Color("darkorange"))
-                        else: 
-                            self.paused = not self.paused; game.display.set_caption("Paused - Tetris")
-                            title = title_font.render("Paused", True, game.Color("darkorange"))
+                            game.display.set_caption("Tetris") 
+                            #title = title_font.render("TETRIS", True, game.Color("darkorange"))
 
+                        else: 
+                            self.paused = not self.paused 
+                            game.display.set_caption("Paused - Tetris")
+                            #title = title_font.render("Paused", True, game.Color("darkorange"))
+
+            if self.paused:
+                screen.blit(overlay, (0, 0))
+                screen.blit(paused_lbl, (185, RESOLUTION[1] / 2))
 
             if not self.paused:
                 #game.display.set_caption("Tetris")
@@ -129,10 +139,10 @@ class Game:
                 line, lines = H - 1, 0
                 for row in range(H - 1, -1, -1):
                     count = 0
-                    for i in range(W):
-                        if self.field[row][i]:
+                    for column in range(W):
+                        if self.field[row][column]:
                             count += 1
-                        self.field[line][i] = self.field[row][i]
+                        self.field[line][column] = self.field[row][column]
                     if count < W:
                         line -= 1
                     else:
