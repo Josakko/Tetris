@@ -2,3 +2,5 @@
 
 cd ~/Programs/Tetris/src
 python3 /home/josakko/Programs/Tetris/src/main.py &
+
+disown
